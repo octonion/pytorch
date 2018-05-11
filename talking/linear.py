@@ -6,6 +6,9 @@ import torch
 import torch.autograd
 import torch.nn.functional as F
 
+from gtts import gTTS
+import os
+
 POLY_DEGREE = 4
 W_target = torch.randn(POLY_DEGREE, 1) * 5
 b_target = torch.randn(1) * 5
@@ -63,6 +66,15 @@ for batch_idx in count(1):
     # Stop criterion
     if loss < 1e-3:
         break
+
+output = "Loss was "
+output += "{:.6f}".format(loss)
+output += " after "+str(batch_idx)+" batches"
+
+tts = gTTS(text=output, lang='en')
+filename = 'output.mp3'
+tts.save(filename)
+os.system('cvlc --play-and-exit ' + filename + ' &')
 
 print('Loss: {:.6f} after {} batches'.format(loss, batch_idx))
 print('==> Learned function:\t' + poly_desc(fc.weight.view(-1), fc.bias))
